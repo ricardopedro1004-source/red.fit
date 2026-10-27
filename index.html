@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulseFit — Seu treino, seu progresso</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<section class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-brand">PULSE<span>FIT</span></div>
+    <h1 id="authTitle">Entre na sua conta</h1>
+    <p class="auth-copy" id="authCopy">Acesse suas fichas e mantenha seus treinos salvos na nuvem.</p>
+    <form id="authForm">
+      <div class="field hidden" id="authNameField"><label for="authName">Nome</label><input id="authName" autocomplete="name" maxlength="80" placeholder="Como podemos te chamar?"></div>
+      <div class="field"><label for="authEmail">E-mail</label><input id="authEmail" type="email" required autocomplete="email" placeholder="voce@email.com"></div>
+      <div class="field"><label for="authPassword">Senha</label><input id="authPassword" type="password" required minlength="6" autocomplete="current-password" placeholder="Mínimo de 6 caracteres"></div>
+      <button class="btn btn-primary auth-submit" id="authSubmit" type="submit">Entrar</button>
+    </form>
+    <button class="auth-switch" id="authSwitch" type="button">Ainda não tem conta? Criar cadastro</button>
+    <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
+  </div>
+</section>
+<div class="app auth-locked" id="appRoot">
+
+    <aside class="sidebar">
+        <div class="brand">PULSE<span>FIT</span></div>
+        <div class="nav-label">MENU PRINCIPAL</div>
+
+        <nav>
+            <button class="nav-btn active" data-view="home">
+                <span class="nav-icon">⌂</span> Visão geral
+            </button>
+            <button class="nav-btn" data-view="workouts">
+                <span class="nav-icon">▤</span> Meus treinos
+            </button>
+            <button class="nav-btn" data-view="history">
+                <span class="nav-icon">◷</span> Histórico
+            </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <strong>Seu progresso começa aqui.</strong>
+            Crie sua rotina e acompanhe cada sessão.
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="topbar-title" id="topbarTitle">Visão geral</div>
+            <div class="profile">
+                <div class="avatar" id="profileAvatar">PF</div>
+                <span id="profileEmail">Minha conta</span>
+                <button class="signout-btn" id="signOutButton" type="button">Sair</button>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <section id="view-home">
+                <div class="heading-row">
+                    <div>
+                        <div class="eyebrow">PULSEFIT TRAINING</div>
+                        <h1>Seu treino. Seu progresso.</h1>
+                        <p class="subtitle">Organize sua rotina e acompanhe sua evolução.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateForm()">+ Criar treino</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">FICHAS CRIADAS</div>
+                        <div class="stat-number" id="statWorkouts">0</div>
+                        <div class="stat-note">Suas rotinas salvas</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">TREINOS CONCLUÍDOS</div>
+                        <div class="stat-number" id="statSessions">0</div>
+                        <div class="stat-note">Sessões registradas</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">EXERCÍCIOS CADASTRADOS</div>
+                        <div class="stat-number" id="statExercises">0</div>
+                        <div class="stat-note">Em todas as suas fichas</div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <h2>Suas fichas de treino</h2>
+                        <button class="btn btn-outline btn-small" onclick="setView('workouts')">Ver todas</button>
+                    </div>
+                    <div id="homeWorkouts"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading"><h2>Atividade recente</h2></div>
+                    <div id="homeHistory"></div>
+                </div>
+            </section>
+
+            <section id="view-workouts" class="hidden">
+                <div class="heading-row">
+                    <div>
+                        <div class="eyebrow">ORGANIZAÇÃO</div>
+                        <h1>Meus treinos</h1>
+                        <p class="subtitle">Monte fichas para cada dia ou grupo muscular.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateForm()">+ Nova ficha</button>
+                </div>
+
+                <div id="createForm" class="panel hidden">
+                    <div class="panel-heading"><h2 id="formTitle">Criar ficha de treino</h2></div>
+                    <form id="workoutForm">
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="workoutName">Nome do treino</label>
+                                <input id="workoutName" required maxlength="60" placeholder="Ex.: Treino A — Peito e tríceps">
+                            </div>
+                            <div class="field">
+                                <label for="workoutFocus">Foco muscular</label>
+                                <select id="workoutFocus">
+                                    <option>Corpo inteiro</option><option>Peito e tríceps</option><option>Costas e bíceps</option><option>Pernas</option><option>Ombros</option><option>Abdômen</option><option>Cardio</option><option>Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Salvar ficha</button>
+                            <button type="button" class="btn btn-outline" onclick="hideCreateForm()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="workoutGrid" class="workout-grid"></div>
+                <div id="workoutDetail" class="hidden">
+                    <div class="panel">
+                        <div class="heading-row">
+                            <div>
+                                <button class="btn btn-outline btn-small" onclick="closeWorkoutDetail()">← Voltar</button>
+                                <h2 id="detailName" style="margin-top:14px"></h2>
+                                <p class="subtitle" id="detailFocus"></p>
+                            </div>
+                            <button class="btn btn-primary" onclick="startWorkout()">▶ Iniciar treino</button>
+                        </div>
+                        <div class="panel-heading">
+                            <h3>Exercícios da ficha</h3>
+                            <button class="btn btn-outline btn-small" onclick="toggleExerciseForm()">+ Adicionar exercício</button>
+                        </div>
+                        <div id="exerciseFormBox" class="hidden">
+                            <form id="exerciseForm">
+                                <div class="form-grid">
+                                    <div class="field full">
+                                        <label for="exerciseName">Nome do exercício</label>
+                                        <input id="exerciseName" required maxlength="80" placeholder="Ex.: Supino reto com halteres">
+                                    </div>
+                                    <div class="field">
+                                        <label for="exerciseMuscle">Grupo muscular</label>
+                                        <select id="exerciseMuscle">
+                                            <option>Peito</option><option>Costas</option><option>Ombros</option><option>Bíceps</option><option>Tríceps</option><option>Pernas</option><option>Glúteos</option><option>Panturrilhas</option><option>Abdômen</option><option>Cardio</option><option>Corpo inteiro</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label for="exerciseSets">Número de séries</label>
+                                        <input id="exerciseSets" type="number" min="1" max="20" value="3" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="exerciseReps">Repetições por série</label>
+                                        <input id="exerciseReps" required maxlength="20" value="10-12" placeholder="Ex.: 10-12 ou 30 s">
+                                    </div>
+                                    <div class="field">
+                                        <label for="exerciseWeight">Carga inicial (kg)</label>
+                                        <input id="exerciseWeight" type="number" min="0" max="1000" step="0.5" value="0" required>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn btn-primary" type="submit">Adicionar à ficha</button>
+                                    <button class="btn btn-outline" type="button" onclick="toggleExerciseForm()">Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="exerciseList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-session" class="hidden">
+                <div class="heading-row">
+                    <div>
+                        <div class="eyebrow">SESSÃO EM ANDAMENTO</div>
+                        <h1 id="sessionTitle">Seu treino</h1>
+                        <p class="subtitle">Registre as cargas e marque as séries concluídas.</p>
+                    </div>
+                </div>
+                <div class="notice">Confira a execução e use cargas compatíveis com sua capacidade. Os valores podem ser ajustados durante a sessão.</div>
+                <div id="sessionExercises"></div>
+                <div class="panel">
+                    <div class="panel-heading"><h2>Finalizar sessão</h2></div>
+                    <p class="subtitle" style="margin-bottom:15px">Ao finalizar, o treino será registrado no seu histórico.</p>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="finishWorkout()">Concluir treino</button>
+                        <button class="btn btn-outline" onclick="cancelWorkout()">Cancelar sessão</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-history" class="hidden">
+                <div class="heading-row">
+                    <div>
+                        <div class="eyebrow">ACOMPANHAMENTO</div>
+                        <h1>Histórico de treinos</h1>
+                        <p class="subtitle">Consulte as sessões que você concluiu.</p>
+                    </div>
+                </div>
+                <div class="panel"><div id="historyList"></div></div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
