@@ -134,3 +134,18 @@
   .nav-btn.active .nav-icon { background: transparent; }
   .main { margin-left: 0; }
 }
+
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;text-align:center}
+.calendar-week{font-size:11px;font-weight:800;color:var(--muted);padding:7px 0}
+.calendar-day,.calendar-empty{display:grid;place-items:center;min-height:38px;border-radius:9px;font-size:13px}
+.calendar-day{background:var(--bg);border:1px solid var(--border)}
+.calendar-day.trained{background:var(--dark);color:#fff;border-color:var(--dark);font-weight:800}
+.calendar-empty{background:transparent}
+.dark-theme{--bg:#101923;--text:#e7eef6;--muted:#9eafc0;--border:#2a3a4a;--light:#172d40;--nav-ink:#e7eef6;--nav-muted:#9eafc0;--nav-active-bg:#183c57;--nav-active:#7bcaff}
+.dark-theme .sidebar,.dark-theme .topbar,.dark-theme .panel,.dark-theme .stat,.dark-theme .workout-card{background:#172330;border-color:#2a3a4a}
+.dark-theme .nav-btn:hover{background:#1b2b3b;color:#e7eef6}
+.dark-theme .nav-icon,.dark-theme .field input,.dark-theme .field select,.dark-theme .session-set input,.dark-theme .signout-btn{background:#101923;color:#e7eef6;border-color:#34495c}
+.dark-theme .btn-outline{background:#172330;color:#e7eef6;border-color:#34495c}
+.dark-theme .sidebar-bottom{background:#172d40;border-color:#2a465c;color:#a9c5da}
+.dark-theme .sidebar-bottom strong{color:#7bcaff}
+@media(max-width:650px){.calendar-grid{gap:4px}.calendar-day,.calendar-empty{min-height:32px;font-size:12px}.sidebar nav{overflow-x:auto}.nav-btn{flex:0 0 auto}}
