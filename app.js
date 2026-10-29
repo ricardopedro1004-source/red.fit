@@ -3,6 +3,8 @@ const SUPABASE_URL="https://phkiscgcezcehfhlebjn.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_h2t0h25feJf7QNqIROT_ug_gdZSM2e1";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let currentUser=null,authMode="login",data={workouts:[],history:[]},selectedWorkoutId=null,editingWorkoutId=null,activeSession=null,saveQueue=Promise.resolve();
+let preferences={name:"",bio:"",genetics:"",weightUnit:"kg",heightUnit:"cm",language:"pt-BR",theme:"light"};
+const preferencesKey=()=>"pulsefit_preferences_"+(currentUser?.id||"guest");
 const historyKey=()=>`pulsefit_history_${currentUser?.id||"guest"}`;
 const uid=()=>crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==="x"?r:(r&3|8)).toString(16)});
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -42,3 +44,28 @@ function cancelWorkout(){if(!activeSession||!confirm("Cancelar esta sessão? As 
 function formatDate(v){return new Date(v).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
 function historyHTML(r){return `<div class="history-item"><div><strong>${esc(r.name)}</strong><p>${formatDate(r.finishedAt)} · ${r.exercises.length} exercícios</p><p>${r.completedSets} de ${r.totalSets} séries concluídas</p></div><span class="pill">Concluído</span></div>`}
 function renderHistory(){const el=document.getElementById("historyList");el.innerHTML=data.history.length?data.history.map(historyHTML).join(""):emptyHTML("◷","Nenhum treino concluído","Quando você finalizar uma sessão, ela aparecerá nesta lista.")}
+
+function renderProfile(){
+ const h=data.history||[],secs=h.reduce((n,x)=>n+(x.durationSeconds||0),0);
+ document.getElementById("profileSessions").textContent=h.length;
+ document.getElementById("profileTime").textContent=secs?Math.round(secs/60)+" min":"—";
+ document.getElementById("profileSets").textContent=h.reduce((n,x)=>n+(x.completedSets||0),0);
+ const now=new Date(),first=new Date(now.getFullYear(),now.getMonth(),1),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+ document.getElementById("calendarMonth").textContent=now.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+ const active=new Set(h.filter(x=>x.finishedAt&&new Date(x.finishedAt).getFullYear()===now.getFullYear()&&new Date(x.finishedAt).getMonth()===now.getMonth()).map(x=>new Date(x.finishedAt).getDate()));
+ let cal=["D","S","T","Q","Q","S","S"].map(x=>'<span class="calendar-week">'+x+"</span>").join("");
+ for(let i=0;i<first.getDay();i++)cal+='<span class="calendar-empty"></span>';
+ for(let d=1;d<=days;d++)cal+='<span class="calendar-day '+(active.has(d)?"trained":"")+'">'+d+"</span>";
+ document.getElementById("trainingCalendar").innerHTML=cal;
+ const best={};h.slice().reverse().forEach(x=>(x.exercises||[]).forEach(ex=>(ex.sets||[]).forEach(s=>{const name=ex.name||"Exercício",weight=Number(s.weight)||0;if(!best[name]||weight>best[name].weight)best[name]={weight:weight,reps:s.reps||"—"}})));
+ const rows=Object.entries(best);
+ document.getElementById("progressList").innerHTML=rows.length?rows.map(([name,v])=>'<div class="history-item"><div><strong>'+esc(name)+'</strong><p>Maior carga registrada: '+v.weight+' '+(preferences.weightUnit||"kg")+' · Repetições: '+esc(v.reps)+'</p></div><span class="pill">Registrado</span></div>').join(""):emptyHTML("↗","Sem dados de evolução","Conclua sessões para registrar cargas e repetições.");
+ document.getElementById("profileHistory").innerHTML=h.length?h.slice(0,8).map(historyHTML).join(""):emptyHTML("◷","Sem sessões","Seus treinos concluídos aparecerão aqui.");
+}
+function fillSettings(){const g=id=>document.getElementById(id);g("settingsName").value=preferences.name||currentUser?.user_metadata?.full_name||"";g("settingsBio").value=preferences.bio||"";g("settingsGenetics").value=preferences.genetics||"";g("settingsWeightUnit").value=preferences.weightUnit||"kg";g("settingsHeightUnit").value=preferences.heightUnit||"cm";g("settingsLanguage").value=preferences.language||"pt-BR";g("settingsTheme").value=preferences.theme||"light"}
+function applyPreferences(){document.body.classList.toggle("dark-theme",preferences.theme==="dark");const name=preferences.name||currentUser?.email||"Minha conta",e=document.getElementById("profileEmail"),a=document.getElementById("profileAvatar");if(e)e.textContent=name;if(a)a.textContent=name.trim().charAt(0).toUpperCase()||"PF";document.documentElement.lang=preferences.language||"pt-BR"}
+document.getElementById("settingsForm").addEventListener("submit",async e=>{e.preventDefault();preferences={name:document.getElementById("settingsName").value.trim(),bio:document.getElementById("settingsBio").value.trim(),genetics:document.getElementById("settingsGenetics").value,weightUnit:document.getElementById("settingsWeightUnit").value,heightUnit:document.getElementById("settingsHeightUnit").value,language:document.getElementById("settingsLanguage").value,theme:document.getElementById("settingsTheme").value};try{localStorage.setItem(preferencesKey(),JSON.stringify(preferences))}catch{}applyPreferences();renderProfile();document.getElementById("settingsMessage").textContent="Configurações salvas neste dispositivo.";if(currentUser&&preferences.name){const r=await supabaseClient.auth.updateUser({data:{full_name:preferences.name}});if(r.error)document.getElementById("settingsMessage").textContent="Preferências salvas, mas não foi possível atualizar o nome da conta."}});
+function refreshShareOptions(){const s=document.getElementById("shareWorkout");if(!s)return;const old=s.value;s.innerHTML='<option value="">Selecione uma ficha</option>'+data.workouts.map(w=>'<option value="'+esc(w.id)+'">'+esc(w.name)+"</option>").join("");if(data.workouts.some(w=>w.id===old))s.value=old}
+function workoutSummary(){const w=getWorkout(document.getElementById("shareWorkout").value);if(!w){alert("Selecione uma ficha primeiro.");return""}return "PulseFit — "+w.name+"\nFoco: "+w.focus+"\n\n"+w.exercises.map((x,i)=>(i+1)+". "+x.name+" — "+x.sets+" séries × "+x.reps+" repetições — "+x.weight+" "+(preferences.weightUnit||"kg")+" ("+x.muscle+")").join("\n")+"\n\nCompartilhado pelo PulseFit."}
+async function copyWorkoutSummary(){const text=workoutSummary();if(!text)return;try{await navigator.clipboard.writeText(text);const m=document.getElementById("shareMessage");m.textContent="Resumo copiado. Cole e envie ao seu personal.";m.classList.remove("hidden")}catch{prompt("Copie o resumo abaixo:",text)}}
+function shareWorkoutWithTrainer(){const text=workoutSummary();if(!text)return;const email=document.getElementById("trainerEmail").value.trim();window.location.href="mailto:"+encodeURIComponent(email)+"?subject="+encodeURIComponent("Meu treino — PulseFit")+"&body="+encodeURIComponent(text)}
