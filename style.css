@@ -179,3 +179,38 @@
 #avatarMessage{font-size:11px}
 .dark-theme .settings-avatar-preview{background:#101923;color:#7bcaff;border-color:#34495c}
 @media(max-width:650px){.topbar .avatar{width:36px;height:36px;flex-basis:36px}.top-profile-text strong{max-width:100px;font-size:11px}.top-profile-text small{max-width:100px;font-size:9px}.topbar .profile{gap:7px}.settings-avatar-preview{width:72px;height:72px;flex-basis:72px}#view-profile h1{font-size:21px}#view-profile .stat-number{font-size:20px}}
+
+
+/* Tipografia mais compacta em todas as abas */
+body { font-size: 14px; }
+.content { font-size: 13px; }
+.content h1 { font-size: clamp(23px, 2.6vw, 31px); }
+.content h2 { font-size: 17px; }
+.content h3 { font-size: 14px; }
+.content .subtitle,
+.content p { font-size: 12px; }
+.content .eyebrow { font-size: 10px; }
+.content .stat-number { font-size: 25px; }
+.content .stat-label { font-size: 11px; }
+.content .stat-note { font-size: 10px; }
+.content .panel { padding: 20px; }
+.content .workout-card { padding: 19px; }
+.content .workout-card p { font-size: 12px; }
+.content .exercise-name { font-size: 13px; }
+.content .exercise-meta { font-size: 11px; }
+.content .field label { font-size: 11px; }
+.content .field input,
+.content .field select { font-size: 12px; padding: 10px 11px; }
+.content .btn { font-size: 12px; }
+.content .pill { font-size: 10px; }
+.content .history-item p { font-size: 11px; }
+.content .notice { font-size: 11px; }
+@media (max-width: 650px) {
+  .content { font-size: 12px; }
+  .content h1 { font-size: 23px; }
+  .content h2 { font-size: 16px; }
+  .content h3 { font-size: 13px; }
+  .content .panel { padding: 16px; }
+  .content .workout-card { padding: 16px; }
+  .content .stat-number { font-size: 20px; }
+}
