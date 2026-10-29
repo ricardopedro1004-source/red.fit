@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PulseFit — Seu treino, seu progresso</title>
+<title>Hyfolium — Seu treino, seu progresso</title>
 
 <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +11,7 @@
 <body>
 <section class="auth-screen" id="authScreen">
   <div class="auth-card">
-    <div class="auth-brand">PULSE<span>FIT</span></div>
+    <div class="auth-brand">HYFO<span>LIUM</span></div>
     <h1 id="authTitle">Entre na sua conta</h1>
     <p class="auth-copy" id="authCopy">Acesse suas fichas e mantenha seus treinos salvos na nuvem.</p>
     <form id="authForm">
@@ -27,7 +27,7 @@
 <div class="app auth-locked" id="appRoot">
 
     <aside class="sidebar">
-        <div class="brand">PULSE<span>FIT</span></div>
+        <div class="brand">HYFO<span>LIUM</span></div>
         <div class="nav-label">MENU PRINCIPAL</div><nav><button class="nav-btn active" data-view="home"><span class="nav-icon">⌂</span> Feed</button><button class="nav-btn" data-view="workouts"><span class="nav-icon">▤</span> Rotina</button><button class="nav-btn" data-view="exercise"><span class="nav-icon">＋</span> Exercício</button><button class="nav-btn" data-view="training"><span class="nav-icon">⇄</span> Treinar</button><button class="nav-btn" data-view="profile"><span class="nav-icon">◉</span> Perfil</button><button class="nav-btn" data-view="settings"><span class="nav-icon">⚙</span> Configurações</button></nav>
 
         <div class="sidebar-bottom">
@@ -40,8 +40,8 @@
         <header class="topbar">
             <div class="topbar-title" id="topbarTitle">Feed</div>
             <div class="profile">
-                <div class="avatar" id="profileAvatar" aria-label="Foto de perfil">PF</div>
-                <div class="top-profile-text"><strong id="profileName">Minha conta</strong><small id="profileBio">Seu perfil PulseFit</small></div>
+                <div class="avatar" id="profileAvatar" aria-label="Foto de perfil">HF</div>
+                <div class="top-profile-text"><strong id="profileName">Minha conta</strong><small id="profileBio">Seu perfil Hyfolium</small></div>
                 <button class="signout-btn" id="signOutButton" type="button">Sair</button>
             </div>
         </header>
@@ -51,7 +51,7 @@
             <section id="view-home">
                 <div class="heading-row">
                     <div>
-                        <div class="eyebrow">PULSEFIT TRAINING</div>
+                        <div class="eyebrow">HYFOLIUM FITNESS</div>
                         <h1>Seu treino. Seu progresso.</h1>
                         <p class="subtitle">Organize sua rotina e acompanhe sua evolução.</p>
                     </div>
@@ -179,7 +179,7 @@
 <div class="panel"><h2>Como funciona</h2><p class="subtitle">Crie a ficha e depois adicione exercícios, séries, repetições e cargas. A ficha ficará disponível em Rotina.</p></div></section>
 <section id="view-training" class="hidden"><div class="heading-row"><div><div class="eyebrow">TREINO COMPARTILHADO</div><h1>Treinar</h1><p class="subtitle">Compartilhe sua ficha com seu personal trainer.</p></div></div><div class="panel"><div class="field"><label for="trainerEmail">E-mail do personal (opcional)</label><input id="trainerEmail" type="email" placeholder="personal@email.com"></div><div class="field" style="margin-top:14px"><label for="shareWorkout">Ficha para compartilhar</label><select id="shareWorkout"><option value="">Selecione uma ficha</option></select></div><div class="form-actions"><button class="btn btn-primary" type="button" onclick="shareWorkoutWithTrainer()">Enviar ao personal</button><button class="btn btn-outline" type="button" onclick="copyWorkoutSummary()">Copiar resumo</button></div><div id="shareMessage" class="notice hidden" style="margin-top:14px"></div><p class="subtitle" style="margin-top:12px">O site prepara um resumo para enviar por e-mail ou copiar; a colaboração ao vivo ainda não está conectada.</p></div></section>
 <section id="view-profile" class="hidden"><div class="heading-row"><div><div class="eyebrow">SEU PROGRESSO</div><h1>Perfil e evolução</h1><p class="subtitle">Acompanhe frequência, cargas, repetições e tempo registrado.</p></div></div><div class="stats"><div class="stat"><div class="stat-label">SESSÕES</div><div class="stat-number" id="profileSessions">0</div></div><div class="stat"><div class="stat-label">TEMPO TOTAL</div><div class="stat-number" id="profileTime">0 min</div></div><div class="stat"><div class="stat-label">SÉRIES CONCLUÍDAS</div><div class="stat-number" id="profileSets">0</div></div></div><div class="panel"><div class="panel-heading"><h2>Calendário de treinos</h2><span class="pill" id="calendarMonth"></span></div><div id="trainingCalendar" class="calendar-grid"></div><p class="subtitle" style="margin-top:12px">Dias azuis indicam treinos concluídos neste mês.</p></div><div class="panel"><div class="panel-heading"><h2>Evolução de cargas e repetições</h2></div><div id="progressList"></div></div><div class="panel"><div class="panel-heading"><h2>Histórico</h2></div><div id="profileHistory"></div></div></section>
-<section id="view-settings" class="hidden"><div class="heading-row"><div><div class="eyebrow">PREFERÊNCIAS</div><h1>Configurações</h1><p class="subtitle">Personalize seu perfil e a aparência.</p></div></div><form id="settingsForm" class="panel"><div class="settings-avatar-row"><div class="settings-avatar-preview" id="settingsAvatarPreview">PF</div><div class="settings-avatar-controls"><strong>Foto de perfil</strong><p class="subtitle">Escolha uma imagem da galeria ou do seu dispositivo.</p><label class="btn btn-outline btn-small upload-label" for="settingsAvatarFile">Escolher foto</label><input id="settingsAvatarFile" class="file-input-hidden" type="file" accept="image/*"><button id="removeAvatarButton" class="btn btn-outline btn-small" type="button">Remover foto</button><p class="subtitle" id="avatarMessage" role="status"></p></div></div><div class="form-grid"><div class="field"><label for="settingsName">Nome</label><input id="settingsName" maxlength="80" placeholder="Seu nome"></div><div class="field"><label for="settingsBio">Bio</label><input id="settingsBio" maxlength="180" placeholder="Conte um pouco sobre você"></div><div class="field"><label for="settingsGenetics">Tipo de genética / biotipo (opcional)</label><select id="settingsGenetics"><option value="">Não informado</option><option>Ectomorfo</option><option>Mesomorfo</option><option>Endomorfo</option><option>Prefiro não definir</option></select></div><div class="field"><label for="settingsWeightUnit">Unidade de peso</label><select id="settingsWeightUnit"><option value="kg">Quilogramas (kg)</option><option value="lb">Libras (lb)</option></select></div><div class="field"><label for="settingsHeightUnit">Unidade de altura</label><select id="settingsHeightUnit"><option value="cm">Centímetros (cm)</option><option value="in">Polegadas (in)</option></select></div><div class="field"><label for="settingsLanguage">Idioma</label><select id="settingsLanguage"><option value="pt-BR">Português (Brasil)</option><option value="en">English</option></select></div><div class="field"><label for="settingsTheme">Tema</label><select id="settingsTheme"><option value="light">Claro</option><option value="dark">Escuro</option></select></div></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar configurações</button></div><p class="subtitle" id="settingsMessage" role="status" style="margin-top:12px"></p></form></section>
+<section id="view-settings" class="hidden"><div class="heading-row"><div><div class="eyebrow">PREFERÊNCIAS</div><h1>Configurações</h1><p class="subtitle">Personalize seu perfil e a aparência.</p></div></div><form id="settingsForm" class="panel"><div class="settings-avatar-row"><div class="settings-avatar-preview" id="settingsAvatarPreview">HF</div><div class="settings-avatar-controls"><strong>Foto de perfil</strong><p class="subtitle">Escolha uma imagem da galeria ou do seu dispositivo.</p><label class="btn btn-outline btn-small upload-label" for="settingsAvatarFile">Escolher foto</label><input id="settingsAvatarFile" class="file-input-hidden" type="file" accept="image/*"><button id="removeAvatarButton" class="btn btn-outline btn-small" type="button">Remover foto</button><p class="subtitle" id="avatarMessage" role="status"></p></div></div><div class="form-grid"><div class="field"><label for="settingsName">Nome</label><input id="settingsName" maxlength="80" placeholder="Seu nome"></div><div class="field"><label for="settingsBio">Bio</label><input id="settingsBio" maxlength="180" placeholder="Conte um pouco sobre você"></div><div class="field"><label for="settingsGenetics">Tipo de genética / biotipo (opcional)</label><select id="settingsGenetics"><option value="">Não informado</option><option>Ectomorfo</option><option>Mesomorfo</option><option>Endomorfo</option><option>Prefiro não definir</option></select></div><div class="field"><label for="settingsWeightUnit">Unidade de peso</label><select id="settingsWeightUnit"><option value="kg">Quilogramas (kg)</option><option value="lb">Libras (lb)</option></select></div><div class="field"><label for="settingsHeightUnit">Unidade de altura</label><select id="settingsHeightUnit"><option value="cm">Centímetros (cm)</option><option value="in">Polegadas (in)</option></select></div><div class="field"><label for="settingsLanguage">Idioma</label><select id="settingsLanguage"><option value="pt-BR">Português (Brasil)</option><option value="en">English</option></select></div><div class="field"><label for="settingsTheme">Tema</label><select id="settingsTheme"><option value="light">Claro</option><option value="dark">Escuro</option></select></div></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar configurações</button></div><p class="subtitle" id="settingsMessage" role="status" style="margin-top:12px"></p></form></section>
             <section id="view-session" class="hidden">
                 <div class="heading-row">
                     <div>
