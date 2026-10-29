@@ -214,3 +214,45 @@ body { font-size: 14px; }
   .content .workout-card { padding: 16px; }
   .content .stat-number { font-size: 20px; }
 }
+\n
+/* HYFOLIUM — paleta neutra com azul #557392 como cor de apoio */
+:root{
+  --blue:#557392;
+  --dark:#000000;
+  --light:#f1f3f5;
+  --bg:#ffffff;
+  --text:#111111;
+  --muted:#626b74;
+  --border:#e0e3e7;
+  --red:#d94b4b;
+  --green:#23845d;
+}
+body{background:#ffffff;color:#111111}
+.auth-screen{background:#ffffff}
+.auth-card{background:#ffffff;border-color:#e0e3e7;box-shadow:0 20px 60px #0000000d}
+.auth-brand,.brand,.topbar-title{color:#000000}
+.auth-brand span,.brand span{color:#557392}
+.sidebar{background:#ffffff;border-right:1px solid #e0e3e7}
+.nav-btn{color:#242424}
+.nav-btn:hover,.nav-btn.active{background:#eef2f6;color:#557392}
+.nav-icon{color:#557392}
+.topbar{background:#ffffff;border-bottom:1px solid #e0e3e7}
+.content{background:#ffffff}
+.panel,.stat,.workout-card{background:#ffffff;border-color:#e0e3e7;box-shadow:0 4px 18px #00000008}
+.btn-primary{background:#111111;color:#ffffff;border-color:#111111}
+.btn-primary:hover{background:#557392;border-color:#557392}
+.btn-outline{background:#ffffff;color:#111111;border-color:#cfd5db}
+.btn-outline:hover{background:#eef2f6;color:#557392;border-color:#557392}
+input,select,textarea{background:#ffffff;color:#111111;border-color:#d8dde2}
+input:focus,select:focus,textarea:focus{border-color:#557392;outline-color:#557392}
+.pill,.workout-letter,.calendar-day.trained{background:#e8edf2;color:#557392}
+.avatar,.settings-avatar-preview{background:#111111;color:#ffffff;border-color:#557392}
+.sidebar-bottom{background:#f5f6f7;color:#222222;border-color:#e0e3e7}
+a{color:#557392}
+.dark-theme{background:#111111;color:#f5f5f5}
+.dark-theme .sidebar,.dark-theme .topbar,.dark-theme .panel,.dark-theme .stat,.dark-theme .workout-card,.dark-theme .auth-card{background:#181818;color:#f5f5f5;border-color:#333333}
+.dark-theme .content{background:#111111;color:#f5f5f5}
+.dark-theme .nav-btn{color:#eeeeee}
+.dark-theme .nav-btn.active,.dark-theme .nav-btn:hover{background:#252a30;color:#9eb3c8}
+.dark-theme .btn-primary{background:#f5f5f5;color:#111111;border-color:#f5f5f5}
+.dark-theme input,.dark-theme select,.dark-theme textarea{background:#202020;color:#f5f5f5;border-color:#444444}
