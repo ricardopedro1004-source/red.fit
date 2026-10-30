@@ -256,3 +256,17 @@ a{color:#557392}
 .dark-theme .nav-btn.active,.dark-theme .nav-btn:hover{background:#252a30;color:#9eb3c8}
 .dark-theme .btn-primary{background:#f5f5f5;color:#111111;border-color:#f5f5f5}
 .dark-theme input,.dark-theme select,.dark-theme textarea{background:#202020;color:#f5f5f5;border-color:#444444}
+
+/* Melhorias do criador de fichas e foto de perfil ampliada */
+.profile-avatar-button{border:1px solid var(--border);padding:0;cursor:zoom-in;overflow:hidden}
+.profile-avatar-button:hover{outline:3px solid #55739255;transform:scale(1.04)}
+.avatar-lightbox{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;background:rgba(0,0,0,.84);backdrop-filter:blur(7px)}
+.avatar-lightbox.hidden{display:none!important}
+.avatar-lightbox img{display:block;width:min(78vw,520px);height:min(78vw,520px);max-height:72vh;object-fit:contain;border-radius:14px;box-shadow:0 16px 60px #0008;background:#171717}
+.avatar-lightbox img.hidden{display:none}
+.avatar-lightbox p{color:#fff;font-size:14px;text-align:center;overflow-wrap:anywhere}
+.avatar-lightbox-close{position:absolute;top:18px;right:20px;width:44px;height:44px;border:1px solid #ffffff66;border-radius:50%;background:#ffffff18;color:#fff;font-size:30px;line-height:1}
+body.avatar-lightbox-open{overflow:hidden}
+#view-workouts .workout-card .card-actions{gap:7px}
+#view-workouts .btn-danger:hover{background:#ffe0e0}
+#view-exercise #workoutForm .form-actions .btn-primary:disabled{opacity:.65;cursor:wait}
