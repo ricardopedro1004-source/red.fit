@@ -56,7 +56,25 @@ document.getElementById("workoutForm").addEventListener("submit",async e=>{
  hideCreateForm();renderWorkouts();renderHome();refreshShareOptions();setView("workouts");if(newId)openWorkout(newId);
 });
 function editWorkout(id){const w=getWorkout(id);if(!w)return;editingWorkoutId=id;setView("exercise");document.getElementById("createForm").classList.remove("hidden");document.getElementById("formTitle").textContent="Editar ficha";document.getElementById("workoutName").value=w.name;document.getElementById("workoutFocus").value=w.focus}
-async function deleteWorkout(id){const w=getWorkout(id);if(!w||!confirm(`Excluir a ficha "${w.name}"? Essa ação não pode ser desfeita.`))return;const old=data.workouts;data.workouts=data.workouts.filter(x=>x.id!==id);if(await saveData()){selectedWorkoutId=null;renderWorkouts();renderHome()}else data.workouts=old}
+async function deleteWorkout(id){
+ const w=getWorkout(id);if(!w||!confirm(`Excluir a ficha "${w.name}"? Essa ação não pode ser desfeita.`))return;
+ const buttons=[...document.querySelectorAll(`button[onclick="deleteWorkout('${id}')"]`)];
+ buttons.forEach(b=>{b.disabled=true;b.textContent="Excluindo..."}); 
+ try{
+  saveQueue=saveQueue.catch(()=>{}).then(async()=>{
+   if(!currentUser)throw new Error("Sua sessão expirou. Entre novamente.");
+   const {data:deleted,error}=await supabaseClient.from("workouts").delete().eq("id",id).eq("user_id",currentUser.id).select("id");
+   if(error)throw error;
+   if(!deleted?.length)throw new Error("O banco não confirmou a exclusão. Verifique as permissões da tabela workouts.");
+  });
+  await saveQueue;
+  data.workouts=data.workouts.filter(item=>item.id!==id);
+  if(selectedWorkoutId===id){selectedWorkoutId=null;document.getElementById("workoutDetail").classList.add("hidden");document.getElementById("workoutGrid").classList.remove("hidden")}
+  if(editingWorkoutId===id)hideCreateForm();
+  renderWorkouts();renderHome();refreshShareOptions();
+ }catch(err){console.error("Erro ao excluir ficha:",err);alert("Não foi possível excluir a ficha: "+(err.message||"tente novamente"))}
+ finally{buttons.forEach(b=>{b.disabled=false;b.textContent="Excluir"})}
+}
 function renderWorkouts(){const grid=document.getElementById("workoutGrid");grid.innerHTML=data.workouts.length?data.workouts.map(workoutCardHTML).join():'<div class="panel" style="grid-column:1/-1">'+emptyHTML("＋","Monte sua primeira ficha","Dê um nome ao treino e adicione seus exercícios.")+"</div>"}
 function openWorkout(id){if(!getWorkout(id))return;selectedWorkoutId=id;document.getElementById("workoutGrid").classList.add("hidden");document.getElementById("createForm").classList.add("hidden");document.getElementById("workoutDetail").classList.remove("hidden");document.getElementById("exerciseFormBox").classList.add("hidden");renderExerciseList()}
 function closeWorkoutDetail(){selectedWorkoutId=null;document.getElementById("workoutDetail").classList.add("hidden");document.getElementById("workoutGrid").classList.remove("hidden");renderWorkouts()}
@@ -76,9 +94,22 @@ async function editExercise(id){
  if(await saveData()){renderExerciseList();renderHome();refreshShareOptions()}else Object.assign(x,original);
 }
 async function deleteExercise(id){
- const w=getWorkout(selectedWorkoutId),x=w?.exercises.find(e=>e.id===id);if(!x||!confirm(`Excluir "${x.name}" desta ficha?`))return;
- const previous=[...w.exercises];w.exercises=w.exercises.filter(e=>e.id!==id);
- if(await saveData()){renderExerciseList();renderHome();refreshShareOptions()}else w.exercises=previous;
+ const w=getWorkout(selectedWorkoutId),x=w?.exercises.find(e=>e.id===id);if(!w||!x||!confirm(`Excluir "${x.name}" desta ficha?`))return;
+ const previous=[...w.exercises],next=previous.filter(item=>item.id!==id);
+ const buttons=[...document.querySelectorAll(`button[onclick="deleteExercise('${id}')"]`)];
+ buttons.forEach(b=>{b.disabled=true;b.textContent="Excluindo..."});
+ try{
+  saveQueue=saveQueue.catch(()=>{}).then(async()=>{
+   if(!currentUser)throw new Error("Sua sessão expirou. Entre novamente.");
+   const {data:updated,error}=await supabaseClient.from("workouts").update({exercises:next,updated_at:new Date().toISOString()}).eq("id",w.id).eq("user_id",currentUser.id).select("id");
+   if(error)throw error;
+   if(!updated?.length)throw new Error("O banco não confirmou a exclusão. Verifique as permissões da tabela workouts.");
+  });
+  await saveQueue;
+  w.exercises=next;
+  renderExerciseList();renderHome();refreshShareOptions();
+ }catch(err){console.error("Erro ao excluir exercício:",err);alert("Não foi possível excluir o exercício: "+(err.message||"tente novamente"))}
+ finally{buttons.forEach(b=>{b.disabled=false;b.textContent="Excluir"})}
 }
 function startWorkout(){const w=getWorkout(selectedWorkoutId);if(!w)return;if(!w.exercises.length){alert("Adicione pelo menos um exercício antes de iniciar.");return}if(!confirm(`Iniciar "${w.name}"?`))return;activeSession={workoutId:w.id,name:w.name,startedAt:new Date().toISOString(),exercises:w.exercises.map(x=>({name:x.name,muscle:x.muscle,sets:Array.from({length:x.sets},()=>({reps:x.reps,weight:x.weight,done:false}))}))};setView("session")}
 function renderSession(){if(!activeSession)return;document.getElementById("sessionTitle").textContent=activeSession.name;document.getElementById("sessionExercises").innerHTML=activeSession.exercises.map((x,i)=>`<div class="panel exercise-session"><h3>${esc(x.name)}</h3><p class="exercise-meta">${esc(x.muscle)}</p><div class="session-set header"><span>SÉRIE</span><span>REPS</span><span>CARGA KG</span><span>OK</span></div>${x.sets.map((s,j)=>`<div class="session-set"><span>${j+1}</span><input aria-label="Repetições da série ${j+1}" value="${esc(s.reps)}" onchange="updateSessionSet(${i},${j},'reps',this.value)"><input aria-label="Carga da série ${j+1}" type="number" min="0" step=".5" value="${s.weight}" onchange="updateSessionSet(${i},${j},'weight',this.value)"><input class="check" aria-label="Marcar série concluída" type="checkbox" ${s.done?"checked":""} onchange="updateSessionSet(${i},${j},'done',this.checked)"></div>`).join("")}</div>`).join("")}
