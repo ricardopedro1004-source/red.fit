@@ -40,11 +40,16 @@
         <header class="topbar">
             <div class="topbar-title" id="topbarTitle">Feed</div>
             <div class="profile">
-                <div class="avatar" id="profileAvatar" aria-label="Foto de perfil">HF</div>
+                <button class="avatar profile-avatar-button" id="profileAvatar" type="button" aria-label="Ampliar foto de perfil">HF</button>
                 <div class="top-profile-text"><strong id="profileName">Minha conta</strong><small id="profileBio">Seu perfil Hyfolium</small></div>
                 <button class="signout-btn" id="signOutButton" type="button">Sair</button>
             </div>
         </header>
+        <div id="avatarLightbox" class="avatar-lightbox hidden" role="dialog" aria-modal="true" aria-label="Foto de perfil ampliada">
+          <button type="button" class="avatar-lightbox-close" id="avatarLightboxClose" aria-label="Fechar foto">×</button>
+          <img id="avatarLightboxImage" alt="Foto de perfil ampliada">
+          <p id="avatarLightboxCaption">Foto de perfil</p>
+        </div>
 
         <div class="content">
 
