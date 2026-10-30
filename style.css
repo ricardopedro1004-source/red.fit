@@ -270,3 +270,21 @@ body.avatar-lightbox-open{overflow:hidden}
 #view-workouts .workout-card .card-actions{gap:7px}
 #view-workouts .btn-danger:hover{background:#ffe0e0}
 #view-exercise #workoutForm .form-actions .btn-primary:disabled{opacity:.65;cursor:wait}
+
+/* Tutoriais em vídeo por exercício */
+.exercise-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tutorial-modal{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:18px;background:#000b;backdrop-filter:blur(6px)}
+.tutorial-modal.hidden{display:none!important}
+.tutorial-dialog{position:relative;width:min(100%,720px);max-height:90vh;overflow:auto;background:#fff;color:#111;border:1px solid #dfe3e8;border-radius:18px;padding:24px;box-shadow:0 24px 80px #0005}
+.tutorial-dialog h2{font-size:21px;margin:5px 42px 18px 0}
+.tutorial-close{position:absolute;right:16px;top:14px;width:38px;height:38px;border:0;border-radius:50%;background:#f0f2f4;color:#111;font-size:26px}
+.tutorial-video-wrap{width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:12px;background:#101010}
+.tutorial-video-wrap iframe{width:100%;height:100%;border:0}
+.tutorial-empty{height:100%;min-height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:22px;text-align:center;color:#fff}
+.tutorial-empty span{display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:#557392;font-size:22px}
+.tutorial-empty p{max-width:390px;color:#c7cdd3;font-size:13px}
+.tutorial-dialog .form-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+body.tutorial-open{overflow:hidden}
+.dark-theme .tutorial-dialog{background:#181818;color:#f5f5f5;border-color:#333}
+.dark-theme .tutorial-close{background:#292929;color:#fff}
+@media(max-width:600px){.tutorial-dialog{padding:18px}.exercise-actions .btn{font-size:11px;padding:7px 9px}}
