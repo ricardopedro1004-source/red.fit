@@ -50,47 +50,7 @@
 
         <div class="content">
 
-            <section id="view-home">
-                <div class="heading-row">
-                    <div>
-                        <h1>Seu espaço de treino</h1>
-                        <p class="subtitle">Tudo o que você precisa, sem complicação.</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="showCreateForm()">+ Criar treino</button>
-                </div>
-
-                <div class="stats">
-                    <div class="stat">
-                        <div class="stat-label">FICHAS CRIADAS</div>
-                        <div class="stat-number" id="statWorkouts">0</div>
-                        
-                    </div>
-                    <div class="stat">
-                        <div class="stat-label">TREINOS CONCLUÍDOS</div>
-                        <div class="stat-number" id="statSessions">0</div>
-                        
-                    </div>
-                    
-                </div>
-
-                <div class="panel">
-                    <div class="panel-heading">
-                        <h2>Suas fichas de treino</h2>
-                        <button class="btn btn-outline btn-small" onclick="setView('workouts')">Ver todas</button>
-                    </div>
-                    <div id="homeWorkouts"></div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-heading"><h2>Atividade recente</h2></div>
-                    <div id="homeHistory"></div>
-                </div>
-
-                <div class="panel feed-panel">
-                    <div class="panel-heading"><div><h2>Feed da comunidade</h2><p class="subtitle">Compartilhe sua evolução com fotos e vídeos dos treinos.</p></div></div>
-                    <div id="feedPosts"><div class="feed-loading">Carregando publicações...</div></div>
-                </div>
-            </section>
+            <section id="view-home"><div class="panel feed-panel"><div id="feedPosts"><div class="feed-loading">Carregando publicações...</div></div></div></section>
 
             <section id="view-workouts" class="hidden">
                 <div class="heading-row">
@@ -231,14 +191,14 @@
  </div>
 </div>
 
-<button type="button" id="createPostFab" class="feed-fab" aria-label="Publicar foto ou vídeo" title="Publicar foto ou vídeo">＋</button>
+<button type="button" id="createPostFab" class="feed-fab hidden" aria-label="Publicar foto ou vídeo" title="Publicar foto ou vídeo">＋</button>
 <div id="createPostModal" class="post-modal hidden" role="dialog" aria-modal="true" aria-labelledby="createPostTitle">
  <div class="post-modal-backdrop" data-close-post></div>
  <div class="post-modal-card"><div class="post-modal-head"><div><span class="eyebrow">COMPARTILHE SEU PROGRESSO</span><h2 id="createPostTitle">Nova publicação</h2></div><button type="button" class="post-close" id="closePostModal" aria-label="Fechar">×</button></div>
   <p class="subtitle post-modal-description">Tire uma foto agora ou escolha uma foto ou vídeo da galeria.</p>
   <form id="createPostForm"><div class="post-media-actions"><button type="button" class="btn btn-primary" id="takePhotoButton">▣ Tirar foto</button><button type="button" class="btn btn-outline" id="chooseMediaButton">▧ Galeria / vídeo</button></div>
    <input id="postCameraInput" class="file-input-hidden" type="file" accept="image/*" capture="environment"><input id="postMediaInput" class="file-input-hidden" type="file" accept="image/*,video/mp4,video/webm,video/quicktime">
-   <div id="postMediaPreview" class="post-media-preview hidden"></div><div class="field post-caption-field"><label for="postCaption">Legenda (opcional)</label><textarea id="postCaption" maxlength="500" rows="3" placeholder="Como foi seu treino hoje?"></textarea></div>
+   <div id="liveCameraPanel" class="live-camera-panel hidden"><video id="liveCameraVideo" autoplay playsinline muted></video><div class="live-camera-actions"><button type="button" class="btn btn-primary" id="captureLivePhoto">● Capturar foto</button><button type="button" class="btn btn-outline" id="closeLiveCamera">Cancelar câmera</button></div></div><div id="postMediaPreview" class="post-media-preview hidden"></div><div class="field post-caption-field"><label for="postCaption">Legenda (opcional)</label><textarea id="postCaption" maxlength="500" rows="3" placeholder="Como foi seu treino hoje?"></textarea></div>
    <p id="postUploadMessage" class="post-upload-message" role="status" aria-live="polite"></p><button type="submit" id="publishPostButton" class="btn btn-primary post-publish">Publicar no feed</button></form>
  </div>
 </div>
