@@ -346,3 +346,118 @@ body.library-open,body.tutorial-open{overflow:hidden}
  .exercise-actions{width:100%}
  .tutorial-dialog{padding:18px}
 }
+/* Hyfolium visual refresh — clean, Hevy-inspired hierarchy */
+:root{
+ --blue:#557392;--dark:#354d66;--light:#eef2f6;--bg:#f7f8fa;
+ --text:#171a1e;--muted:#737d88;--border:#e7e9ec;
+ --nav-ink:#1c2229;--nav-muted:#737d88;--nav-active-bg:#edf1f5;--nav-active:#354d66;
+ --sidebar-width:232px;
+}
+body{background:#f7f8fa;color:#171a1e;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;line-height:1.48}
+.sidebar{background:#fff;border-right:1px solid #e8eaed;box-shadow:none;padding:25px 15px}
+.brand{color:#15191e;font-size:23px;padding:3px 12px 34px}
+.brand span{color:#557392}
+.nav-btn{min-height:43px;border-radius:9px;color:#707984;font-size:13px;font-weight:600;padding:9px 11px}
+.nav-btn:hover{background:#f5f6f8;color:#20262d;transform:none}
+.nav-btn.active{background:#edf1f5;color:#354d66;border-color:transparent;box-shadow:inset 3px 0 0 #557392}
+.nav-icon,.nav-btn.active .nav-icon{background:transparent;color:inherit}
+.main{background:#f7f8fa}
+.topbar{min-height:66px;background:#fff;border-bottom:1px solid #e8eaed;padding:12px 32px}
+.topbar-title{font-size:14px;font-weight:650;color:#3b424a}
+.profile{gap:9px}
+.top-profile-text{display:grid;gap:0}
+.top-profile-text strong{font-size:12px}
+.top-profile-text small{font-size:11px;color:#818a94}
+.avatar{background:#edf1f5;color:#354d66}
+.signout-btn{border:0;background:transparent;color:#707984}
+.content{max-width:1120px;padding:30px 34px 60px}
+.heading-row{margin-bottom:22px;gap:12px}
+.heading-row h1{font-size:27px;letter-spacing:-.8px;font-weight:750;margin:0 0 5px;color:#171a1e}
+.eyebrow{display:none}
+.subtitle{font-size:13px;color:#7b838d}
+.btn{border-radius:8px;padding:10px 15px;font-size:12px;font-weight:700;box-shadow:none}
+.btn-primary{background:#354d66;color:#fff}
+.btn-primary:hover{background:#263b52;transform:none}
+.btn-outline{background:#fff;border:1px solid #e1e5e9;color:#343c45}
+.btn-outline:hover{background:#f5f7f9;transform:none}
+.btn-danger{background:#fff5f5}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0}
+.stat{display:flex;align-items:center;gap:14px;padding:15px 18px;border:1px solid #e8eaed;border-radius:10px;box-shadow:none}
+.stat-label{font-size:11px;color:#818a94;letter-spacing:.3px}
+.stat-number{font-size:24px;line-height:1.1;margin:0;color:#171a1e;font-weight:750}
+.panel{padding:20px 21px;margin-bottom:16px;border:1px solid #e8eaed;border-radius:11px;box-shadow:none}
+.panel-heading{margin-bottom:13px}
+.panel-heading h2,.panel h2{font-size:16px;font-weight:700;letter-spacing:-.2px}
+.workout-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.workout-card{padding:17px;border:1px solid #e8eaed;border-radius:11px;box-shadow:none;transition:border-color .15s}
+.workout-card:hover{border-color:#c4cfda}
+.workout-letter{width:36px;height:36px;border-radius:8px;background:#edf1f5;color:#354d66;font-size:15px;margin-bottom:13px}
+.workout-card h3{font-size:14px;font-weight:700}
+.workout-card p{font-size:12px;margin:4px 0 12px}
+.pill{background:#f0f2f4;color:#596675;font-size:10px;padding:4px 8px}
+.card-actions{margin-top:13px;gap:6px}
+.exercise-row{padding:14px 0;border-color:#eceef0}
+.exercise-name{font-size:13px;font-weight:650}
+.exercise-meta{font-size:11px;color:#838b94}
+.exercise-actions{gap:5px}
+.form-grid{gap:13px}
+.field label{font-size:11px;color:#555f69}
+.field input,.field select{border:1px solid #dfe3e7;border-radius:8px;padding:10px 11px;background:#fff;color:#20262d;font-size:13px}
+.field input:focus,.field select:focus{border-color:#557392;outline:2px solid #e7edf3}
+.empty{padding:30px 18px}
+.empty-icon{font-size:27px;color:#8292a3}
+.empty h3{font-size:14px}
+.empty p{font-size:12px}
+.notice{background:#f0f3f6;color:#53677d}
+.history-item{padding:13px 0}
+.auth-screen{background:#f7f8fa}
+.auth-card{border:1px solid #e7e9ec;border-radius:14px;box-shadow:0 12px 36px #1523330d}
+.auth-brand{color:#171a1e}
+.auth-brand span{color:#557392}
+.auth-submit{background:#354d66}
+.exercise-library-dialog{border-radius:14px;box-shadow:0 20px 60px #0002}
+.library-header{padding:20px 23px 15px}
+.library-header h2{font-size:20px}
+.library-exercise-card{border-radius:10px}
+.library-exercise-art{background:#f0f2f4;color:#557392;border-radius:9px}
+.library-tutorial-link{color:#557392}
+.library-exercise-card:hover{border-color:#c8d2dc;background:#fafbfc}
+.library-footer{background:#fafbfc}
+@media(max-width:900px){
+ :root{--sidebar-width:205px}
+ .content{padding:25px 22px 50px}
+ .topbar{padding-inline:22px}
+}
+@media(max-width:650px){
+ .sidebar{position:fixed;inset:auto 0 0;width:100%;z-index:30;padding:7px 5px calc(7px + env(safe-area-inset-bottom));border:0;border-top:1px solid #e5e8eb;box-shadow:0 -5px 20px #1723330a;background:#fff}
+ .brand{display:none}
+ .sidebar nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;overflow:visible}
+ .nav-btn{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;min-width:0;min-height:48px;padding:5px 1px;border:0;border-radius:7px;font-size:9px;font-weight:600;white-space:nowrap}
+ .nav-btn.active{box-shadow:none;background:#edf1f5}
+ .nav-icon,.nav-btn.active .nav-icon{width:22px;height:22px;flex:0 0 22px;font-size:17px}
+ .main{margin-left:0;padding-bottom:75px}
+ .topbar{position:sticky;top:0;z-index:20;min-height:56px;padding:9px 15px}
+ .topbar-title{font-size:13px}
+ .profile{gap:6px}
+ .top-profile-text small{display:none}
+ .avatar{width:32px;height:32px}
+ .signout-btn{font-size:11px;padding:5px 7px}
+ .content{padding:22px 15px 35px}
+ .heading-row{align-items:center;margin-bottom:17px}
+ .heading-row h1{font-size:23px}
+ .heading-row .btn{padding:9px 11px}
+ .stats{gap:8px;margin:16px 0}
+ .stat{padding:12px 13px;gap:9px;display:block}
+ .stat-label{font-size:9px}
+ .stat-number{font-size:21px;margin-top:4px}
+ .panel{padding:16px;margin-bottom:12px}
+ .panel-heading h2,.panel h2{font-size:15px}
+ .workout-grid{grid-template-columns:1fr;gap:9px}
+ .workout-card{padding:15px}
+ .form-grid{grid-template-columns:1fr}
+ .field.full{grid-column:auto}
+ .exercise-row{display:flex;align-items:flex-start;flex-direction:column;gap:9px}
+ .exercise-actions{width:100%;justify-content:flex-start}
+ .exercise-actions .btn{font-size:10px;padding:7px 9px}
+ .library-footer{align-items:flex-start;flex-direction:column}
+}
