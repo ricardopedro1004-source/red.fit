@@ -147,6 +147,7 @@
                                         <label for="exerciseWeight">Carga inicial (kg)</label>
                                         <input id="exerciseWeight" type="number" min="0" max="1000" step="0.5" value="0" required>
                                     </div>
+<div class="field full"><label for="exerciseVideo">Link do vídeo tutorial (YouTube)</label><input id="exerciseVideo" type="url" placeholder="Cole o link do vídeo (opcional)"><small class="subtitle">O vídeo ficará disponível na ficha do exercício.</small></div>
                                 </div>
                                 <div class="form-actions">
                                     <button class="btn btn-primary" type="submit">Adicionar à ficha</button>
@@ -219,6 +220,7 @@
     </main>
 </div>
 
+<div id="exerciseTutorialModal" class="tutorial-modal hidden" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle"><div class="tutorial-dialog"><button type="button" class="tutorial-close" onclick="closeExerciseTutorial()" aria-label="Fechar">×</button><div class="eyebrow">GUIA DE EXECUÇÃO</div><h2 id="tutorialTitle">Tutorial do exercício</h2><div id="tutorialVideoWrap" class="tutorial-video-wrap"></div><p id="tutorialHint" class="subtitle"></p><div class="form-actions"><a id="tutorialSearchLink" class="btn btn-outline" target="_blank" rel="noopener noreferrer">Buscar vídeo tutorial</a><button type="button" class="btn btn-primary" onclick="closeExerciseTutorial()">Concluir</button></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="app.js"></script>
 </body>
