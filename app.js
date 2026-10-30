@@ -1,7 +1,7 @@
 /* Hyfolium: autenticação Supabase e criador de treinos */
 const SUPABASE_URL="https://phkiscgcezcehfhlebjn.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_h2t0h25feJf7QNqIROT_ug_gdZSM2e1";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{storage:window.localStorage, persistSession:true, autoRefreshToken:true, detectSessionInUrl:true}});
 let currentUser=null,authMode="login",data={workouts:[],history:[]},selectedWorkoutId=null,editingWorkoutId=null,activeSession=null,saveQueue=Promise.resolve();
 let preferences={name:"",bio:"",genetics:"",weightUnit:"kg",heightUnit:"cm",language:"pt-BR",theme:"light",avatar:""};
 const preferencesKey=()=>"pulsefit_preferences_"+(currentUser?.id||"guest");
