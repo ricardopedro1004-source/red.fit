@@ -16,7 +16,21 @@ async function activateSession(user){currentUser=user;try{const {data:rows,error
 supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"){currentUser=null;data={workouts:[],history:[]};document.getElementById("appRoot").classList.add("auth-locked");document.getElementById("authScreen").classList.remove("hidden")}});
 (async()=>{const {data:{session},error}=await supabaseClient.auth.getSession();if(error)showAuthMessage(error.message,true);else if(session?.user){try{await activateSession(session.user)}catch(err){console.error(err)}}})();
 document.getElementById("signOutButton").addEventListener("click",async()=>{if(activeSession&&!confirm("Há um treino em andamento. Deseja sair mesmo assim?"))return;activeSession=null;await supabaseClient.auth.signOut();document.getElementById("authForm").reset();setAuthMode("login")});
-async function saveData(){if(!currentUser){alert("Entre na sua conta para salvar seus treinos.");return false}try{localStorage.setItem(historyKey(),JSON.stringify(data.history))}catch(err){console.error(err)}const userId=currentUser.id;saveQueue=saveQueue.then(async()=>{if(!currentUser||currentUser.id!==userId)return;const payload=data.workouts.map(w=>({id:w.id,user_id:userId,name:w.name,category:w.focus||"Personalizado",exercises:w.exercises||[],updated_at:new Date().toISOString()}));if(payload.length){const {error}=await supabaseClient.from("workouts").upsert(payload,{onConflict:"id"});if(error)throw error}const {data:rows,error}=await supabaseClient.from("workouts").select("id").eq("user_id",userId);if(error)throw error;const keep=new Set(data.workouts.map(w=>w.id)),remove=(rows||[]).map(r=>r.id).filter(id=>!keep.has(id));if(remove.length){const {error}=await supabaseClient.from("workouts").delete().eq("user_id",userId).in("id",remove);if(error)throw error}}).catch(err=>{console.error(err);alert("Erro ao salvar na nuvem: "+(err.message||"tente novamente"))});await saveQueue;return true}
+async function saveData(){
+ if(!currentUser){alert("Entre na sua conta para salvar seus treinos.");return false}
+ const userId=currentUser.id;
+ try{localStorage.setItem(historyKey(),JSON.stringify(data.history))}catch(err){console.error(err)}
+ saveQueue=saveQueue.then(async()=>{
+  if(!currentUser||currentUser.id!==userId)throw new Error("Sua sessão mudou. Entre novamente e tente salvar.");
+  const payload=data.workouts.map(w=>({id:w.id,user_id:userId,name:w.name,category:w.focus||"Personalizado",exercises:w.exercises||[],updated_at:new Date().toISOString()}));
+  if(payload.length){const {error}=await supabaseClient.from("workouts").upsert(payload,{onConflict:"id"});if(error)throw error}
+  const {data:rows,error}=await supabaseClient.from("workouts").select("id").eq("user_id",userId);if(error)throw error;
+  const keep=new Set(data.workouts.map(w=>w.id)),remove=(rows||[]).map(r=>r.id).filter(id=>!keep.has(id));
+  if(remove.length){const {error}=await supabaseClient.from("workouts").delete().eq("user_id",userId).in("id",remove);if(error)throw error}
+  return true;
+ }).catch(err=>{console.error(err);alert("Não foi possível salvar na nuvem: "+(err.message||"tente novamente"));return false});
+ return await saveQueue;
+}
 function getWorkout(id){return data.workouts.find(w=>w.id===id)}
 function setView(view){if(activeSession&&view!=="session"){alert("Finalize ou cancele a sessão antes de sair do treino.");return}document.querySelectorAll(".content > section").forEach(el=>el.classList.add("hidden"));document.getElementById("view-"+view)?.classList.remove("hidden");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.view===view));document.getElementById("topbarTitle").textContent=({home:"Feed",workouts:"Rotina",exercise:"Exercício",training:"Treinar",profile:"Perfil",settings:"Configurações",history:"Histórico",session:"Treino em andamento"})[view]||"Hyfolium";if(view==="home")renderHome();if(view==="workouts")renderWorkouts();if(view==="history")renderHistory();if(view==="session")renderSession();if(view==="profile"&&typeof renderProfile==="function")renderProfile();if(view==="training"&&typeof refreshShareOptions==="function")refreshShareOptions();if(view==="settings"&&typeof fillSettings==="function")fillSettings()}
 document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
@@ -25,7 +39,22 @@ function workoutCardHTML(w){return `<article class="workout-card"><div class="wo
 function renderHome(){document.getElementById("statWorkouts").textContent=data.workouts.length;document.getElementById("statSessions").textContent=data.history.length;document.getElementById("statExercises").textContent=data.workouts.reduce((n,w)=>n+w.exercises.length,0);document.getElementById("homeWorkouts").innerHTML=data.workouts.length?`<div class="workout-grid">${data.workouts.slice(0,4).map(workoutCardHTML).join("")}</div>`:emptyHTML("▤","Você ainda não tem fichas","Crie seu primeiro treino e adicione exercícios.");document.getElementById("homeHistory").innerHTML=data.history.length?data.history.slice(0,3).map(historyHTML).join(""):'<p class="subtitle">Suas sessões concluídas aparecerão aqui.</p>'}
 function showCreateForm(){setView("exercise");editingWorkoutId=null;document.getElementById("formTitle").textContent="Criar ficha de treino";document.getElementById("workoutForm").reset();document.getElementById("createForm").classList.remove("hidden");document.getElementById("workoutName").focus()}
 function hideCreateForm(){document.getElementById("createForm").classList.add("hidden");editingWorkoutId=null}
-document.getElementById("workoutForm").addEventListener("submit",async e=>{e.preventDefault();const name=document.getElementById("workoutName").value.trim(),focus=document.getElementById("workoutFocus").value;if(!name)return;let newId=editingWorkoutId;if(editingWorkoutId){const w=getWorkout(editingWorkoutId);if(!w)return;w.name=name;w.focus=focus}else{const w={id:uid(),name,focus,exercises:[],createdAt:new Date().toISOString()};data.workouts.push(w);newId=w.id}if(!await saveData())return;hideCreateForm();renderWorkouts();renderHome();refreshShareOptions();setView("workouts");if(newId)openWorkout(newId)});
+document.getElementById("workoutForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const name=document.getElementById("workoutName").value.trim(),focus=document.getElementById("workoutFocus").value;
+ if(!name){alert("Dê um nome para a ficha.");return}
+ const wasEditing=Boolean(editingWorkoutId),w=wasEditing?getWorkout(editingWorkoutId):null;
+ if(wasEditing&&!w){alert("Não encontrei essa ficha. Atualize a página e tente novamente.");return}
+ const previous=w?{...w,exercises:[...w.exercises]}:null;
+ let newId=editingWorkoutId;
+ if(w){w.name=name;w.focus=focus}
+ else{const created={id:uid(),name,focus,exercises:[],createdAt:new Date().toISOString()};data.workouts.push(created);newId=created.id}
+ const button=e.submitter;if(button){button.disabled=true;button.textContent="Salvando..."}
+ const saved=await saveData();
+ if(button){button.disabled=false;button.textContent="Salvar ficha"}
+ if(!saved){if(w&&previous)Object.assign(w,previous);else data.workouts=data.workouts.filter(x=>x.id!==newId);return}
+ hideCreateForm();renderWorkouts();renderHome();refreshShareOptions();setView("workouts");if(newId)openWorkout(newId);
+});
 function editWorkout(id){const w=getWorkout(id);if(!w)return;editingWorkoutId=id;setView("exercise");document.getElementById("createForm").classList.remove("hidden");document.getElementById("formTitle").textContent="Editar ficha";document.getElementById("workoutName").value=w.name;document.getElementById("workoutFocus").value=w.focus}
 async function deleteWorkout(id){const w=getWorkout(id);if(!w||!confirm(`Excluir a ficha "${w.name}"? Essa ação não pode ser desfeita.`))return;const old=data.workouts;data.workouts=data.workouts.filter(x=>x.id!==id);if(await saveData()){selectedWorkoutId=null;renderWorkouts();renderHome()}else data.workouts=old}
 function renderWorkouts(){const grid=document.getElementById("workoutGrid");grid.innerHTML=data.workouts.length?data.workouts.map(workoutCardHTML).join():'<div class="panel" style="grid-column:1/-1">'+emptyHTML("＋","Monte sua primeira ficha","Dê um nome ao treino e adicione seus exercícios.")+"</div>"}
@@ -34,8 +63,22 @@ function closeWorkoutDetail(){selectedWorkoutId=null;document.getElementById("wo
 function toggleExerciseForm(){const el=document.getElementById("exerciseFormBox");el.classList.toggle("hidden");if(!el.classList.contains("hidden"))document.getElementById("exerciseName").focus()}
 document.getElementById("exerciseForm").addEventListener("submit",async e=>{e.preventDefault();const w=getWorkout(selectedWorkoutId);if(!w)return;const name=document.getElementById("exerciseName").value.trim(),muscle=document.getElementById("exerciseMuscle").value,sets=Number(document.getElementById("exerciseSets").value),reps=document.getElementById("exerciseReps").value.trim(),weight=Number(document.getElementById("exerciseWeight").value);if(!name||!reps||!Number.isInteger(sets)||sets<1||sets>20||!Number.isFinite(weight)||weight<0){alert("Confira os dados do exercício.");return}w.exercises.push({id:uid(),name,muscle,sets,reps,weight});if(!await saveData()){w.exercises.pop();return}e.target.reset();document.getElementById("exerciseSets").value=3;document.getElementById("exerciseReps").value="10-12";document.getElementById("exerciseWeight").value=0;document.getElementById("exerciseFormBox").classList.add("hidden");renderExerciseList();renderHome()});
 function renderExerciseList(){const w=getWorkout(selectedWorkoutId);if(!w)return;document.getElementById("detailName").textContent=w.name;document.getElementById("detailFocus").textContent=w.focus;document.getElementById("exerciseList").innerHTML=w.exercises.length?w.exercises.map((x,i)=>`<div class="exercise-row"><div><div class="exercise-name">${i+1}. ${esc(x.name)}</div><div class="exercise-meta">${esc(x.muscle)} · ${x.sets} séries · ${esc(x.reps)} repetições · ${x.weight} kg</div></div><div class="exercise-actions"><button class="btn btn-outline btn-small" onclick="editExercise('${x.id}')">Editar</button><button class="btn btn-danger btn-small" onclick="deleteExercise('${x.id}')">Excluir</button></div></div>`).join(""):emptyHTML("＋","Nenhum exercício cadastrado","Use o botão acima para adicionar o primeiro exercício desta ficha.")}
-async function editExercise(id){const w=getWorkout(selectedWorkoutId),x=w?.exercises.find(e=>e.id===id);if(!x)return;const name=prompt("Nome do exercício:",x.name);if(name===null||!name.trim())return;const sets=Number(prompt("Número de séries:",x.sets));if(!Number.isInteger(sets)||sets<1||sets>20){alert("Informe de 1 a 20 séries.");return}const reps=prompt("Repetições por série:",x.reps);if(reps===null||!reps.trim())return;const weight=Number(prompt("Carga em kg:",x.weight));if(!Number.isFinite(weight)||weight<0){alert("Informe uma carga válida.");return}Object.assign(x,{name:name.trim(),sets,reps:reps.trim(),weight});if(await saveData()){renderExerciseList();renderHome()}}
-async function deleteExercise(id){const w=getWorkout(selectedWorkoutId),x=w?.exercises.find(e=>e.id===id);if(!x||!confirm(`Excluir "${x.name}" desta ficha?`))return;w.exercises=w.exercises.filter(e=>e.id!==id);if(await saveData()){renderExerciseList();renderHome()}}
+async function editExercise(id){
+ const w=getWorkout(selectedWorkoutId),x=w?.exercises.find(e=>e.id===id);if(!x)return;
+ const original={...x};
+ const name=prompt("Nome do exercício:",x.name);if(name===null)return;if(!name.trim()){alert("O nome não pode ficar vazio.");return}
+ const muscle=prompt("Grupo muscular:",x.muscle||"Corpo inteiro");if(muscle===null)return;if(!muscle.trim()){alert("Informe o grupo muscular.");return}
+ const sets=Number(prompt("Número de séries (1 a 20):",x.sets));if(!Number.isInteger(sets)||sets<1||sets>20){alert("Informe de 1 a 20 séries.");return}
+ const reps=prompt("Repetições por série:",x.reps);if(reps===null)return;if(!reps.trim()){alert("Informe as repetições.");return}
+ const weight=Number(prompt("Carga em kg:",x.weight));if(!Number.isFinite(weight)||weight<0){alert("Informe uma carga válida.");return}
+ Object.assign(x,{name:name.trim(),muscle:muscle.trim(),sets,reps:reps.trim(),weight});
+ if(await saveData()){renderExerciseList();renderHome();refreshShareOptions()}else Object.assign(x,original);
+}
+async function deleteExercise(id){
+ const w=getWorkout(selectedWorkoutId),x=w?.exercises.find(e=>e.id===id);if(!x||!confirm(`Excluir "${x.name}" desta ficha?`))return;
+ const previous=[...w.exercises];w.exercises=w.exercises.filter(e=>e.id!==id);
+ if(await saveData()){renderExerciseList();renderHome();refreshShareOptions()}else w.exercises=previous;
+}
 function startWorkout(){const w=getWorkout(selectedWorkoutId);if(!w)return;if(!w.exercises.length){alert("Adicione pelo menos um exercício antes de iniciar.");return}if(!confirm(`Iniciar "${w.name}"?`))return;activeSession={workoutId:w.id,name:w.name,startedAt:new Date().toISOString(),exercises:w.exercises.map(x=>({name:x.name,muscle:x.muscle,sets:Array.from({length:x.sets},()=>({reps:x.reps,weight:x.weight,done:false}))}))};setView("session")}
 function renderSession(){if(!activeSession)return;document.getElementById("sessionTitle").textContent=activeSession.name;document.getElementById("sessionExercises").innerHTML=activeSession.exercises.map((x,i)=>`<div class="panel exercise-session"><h3>${esc(x.name)}</h3><p class="exercise-meta">${esc(x.muscle)}</p><div class="session-set header"><span>SÉRIE</span><span>REPS</span><span>CARGA KG</span><span>OK</span></div>${x.sets.map((s,j)=>`<div class="session-set"><span>${j+1}</span><input aria-label="Repetições da série ${j+1}" value="${esc(s.reps)}" onchange="updateSessionSet(${i},${j},'reps',this.value)"><input aria-label="Carga da série ${j+1}" type="number" min="0" step=".5" value="${s.weight}" onchange="updateSessionSet(${i},${j},'weight',this.value)"><input class="check" aria-label="Marcar série concluída" type="checkbox" ${s.done?"checked":""} onchange="updateSessionSet(${i},${j},'done',this.checked)"></div>`).join("")}</div>`).join("")}
 function updateSessionSet(i,j,key,value){const s=activeSession?.exercises[i]?.sets[j];if(!s)return;if(key==="weight"){const n=Number(value);if(!Number.isFinite(n)||n<0){alert("Informe uma carga válida.");renderSession();return}s.weight=n}else if(key==="reps"){if(!String(value).trim())return;s.reps=String(value).trim()}else s.done=Boolean(value)}
@@ -63,6 +106,21 @@ function renderProfile(){
  document.getElementById("profileHistory").innerHTML=h.length?h.slice(0,8).map(historyHTML).join(""):emptyHTML("◷","Sem sessões","Seus treinos concluídos aparecerão aqui.");
 }
 function fillSettings(){const g=id=>document.getElementById(id);g("settingsName").value=preferences.name||currentUser?.user_metadata?.full_name||"";g("settingsBio").value=preferences.bio||"";g("settingsGenetics").value=preferences.genetics||"";g("settingsWeightUnit").value=preferences.weightUnit||"kg";g("settingsHeightUnit").value=preferences.heightUnit||"cm";g("settingsLanguage").value=preferences.language||"pt-BR";g("settingsTheme").value=preferences.theme||"light";renderAvatarPreview()}
+
+function openAvatarLightbox(){
+ const box=document.getElementById("avatarLightbox"),image=document.getElementById("avatarLightboxImage");
+ if(!box||!image)return;
+ const avatar=document.getElementById("profileAvatar"),photo=avatar?.querySelector("img");
+ if(!photo){document.getElementById("avatarLightboxCaption").textContent="Você ainda não adicionou uma foto de perfil.";image.removeAttribute("src");image.classList.add("hidden")}
+ else{image.src=photo.src;image.classList.remove("hidden");document.getElementById("avatarLightboxCaption").textContent=preferences.name||currentUser?.email||"Foto de perfil"}
+ box.classList.remove("hidden");document.body.classList.add("avatar-lightbox-open");
+}
+function closeAvatarLightbox(){document.getElementById("avatarLightbox")?.classList.add("hidden");document.body.classList.remove("avatar-lightbox-open")}
+document.getElementById("profileAvatar").addEventListener("click",openAvatarLightbox);
+document.getElementById("avatarLightboxClose").addEventListener("click",closeAvatarLightbox);
+document.getElementById("avatarLightbox").addEventListener("click",e=>{if(e.target.id==="avatarLightbox")closeAvatarLightbox()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAvatarLightbox()});
+
 function renderAvatarPreview(){const preview=document.getElementById("settingsAvatarPreview");if(!preview)return;const name=preferences.name||currentUser?.user_metadata?.full_name||currentUser?.email||"HF";preview.innerHTML=preferences.avatar?'<img src="'+preferences.avatar+'" alt="Prévia da foto de perfil">':esc(name.trim().charAt(0).toUpperCase()||"HF")}
 function applyPreferences(){document.body.classList.toggle("dark-theme",preferences.theme==="dark");const name=preferences.name||currentUser?.user_metadata?.full_name||currentUser?.email||"Minha conta",bio=preferences.bio||"Seu perfil Hyfolium",a=document.getElementById("profileAvatar"),n=document.getElementById("profileName"),b=document.getElementById("profileBio");if(a)a.innerHTML=preferences.avatar?'<img src="'+preferences.avatar+'" alt="Foto de perfil">':esc(name.trim().charAt(0).toUpperCase()||"HF");if(n)n.textContent=name;if(b)b.textContent=bio;document.documentElement.lang=preferences.language||"pt-BR";renderAvatarPreview()}
 document.getElementById("settingsForm").addEventListener("submit",async e=>{e.preventDefault();preferences={...preferences,name:document.getElementById("settingsName").value.trim(),bio:document.getElementById("settingsBio").value.trim(),genetics:document.getElementById("settingsGenetics").value,weightUnit:document.getElementById("settingsWeightUnit").value,heightUnit:document.getElementById("settingsHeightUnit").value,language:document.getElementById("settingsLanguage").value,theme:document.getElementById("settingsTheme").value};try{localStorage.setItem(preferencesKey(),JSON.stringify(preferences))}catch{}applyPreferences();renderProfile();document.getElementById("settingsMessage").textContent="Configurações salvas neste dispositivo.";if(currentUser&&preferences.name){const r=await supabaseClient.auth.updateUser({data:{full_name:preferences.name}});if(r.error)document.getElementById("settingsMessage").textContent="Preferências salvas, mas não foi possível atualizar o nome da conta."}});
